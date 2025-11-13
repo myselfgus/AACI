@@ -578,7 +578,7 @@ python scripts/validate_dataset.py \
 
 ### Configurar Fine-Tuning
 
-```python
+```yaml
 # config/finetune_config.yaml
 model:
   name: openai/whisper-large-v3
