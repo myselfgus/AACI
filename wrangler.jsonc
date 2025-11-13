@@ -1,0 +1,43 @@
+{
+  "name": "whisper-container-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-10-26",
+  "workers_dev": true,
+  "dispatch_namespaces": [
+    {
+      "binding": "dispatcher",
+      "namespace": "HealthOS"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "CONTAINER_PORT": "8787",
+    "LOG_LEVEL": "info"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "containers": [
+    {
+      "class_name": "WhisperContainer",
+      "image": "./Dockerfile",
+      "instance_type": "standard-4"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WHISPER_CONTAINER",
+        "class_name": "WhisperContainer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "WhisperContainer"
+      ]
+    }
+  ]
+}
