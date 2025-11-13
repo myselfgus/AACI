@@ -76,7 +76,14 @@ def validate_audio_files(audio_dir, output_csv):
 
     results = []
 
-    for audio_file in Path(audio_dir).rglob("*.{mp3,wav,m4a,flac}"):
+    results = []
+
+    audio_files = []
+    extensions = ["mp3", "wav", "m4a", "flac"]
+    for ext in extensions:
+        audio_files.extend(Path(audio_dir).rglob(f"*.{ext}"))
+
+    for audio_file in audio_files:
         try:
             # Carregar áudio
             y, sr = librosa.load(audio_file, sr=None)
