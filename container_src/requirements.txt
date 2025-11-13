@@ -1,28 +1,41 @@
 # ============================================================================
-# HealthOS Whisper ContainerWorker - October 2025
-# Audio Processing: Transcription, Diarization, Medical NER, Paralinguistics, Prosody
+# AACI Whisper Enhanced ContainerWorker - November 2025
+# Audio Processing: Real-Time Transcription, Diarization, Medical NER,
+# Paralinguistics, Prosody, Pattern Matching for Ambient Listening
 # ============================================================================
 
 # ---- FastAPI & Web Framework ----
 fastapi==0.115.6
-uvicorn==0.32.1
+uvicorn[standard]==0.32.1
 pydantic==2.10.3
 python-multipart==0.0.17
 httpx==0.28.1
 python-dotenv==1.0.1
+websockets==13.1  # Real-time transcription support
 
 # ---- Audio Transcription (ASR) ----
 faster-whisper==1.1.1
+openai-whisper==20231117  # Backup/fallback model
 
-# ---- Speaker Diarization ----
+# ---- Advanced Speaker Diarization ----
 pyannote.audio==3.3.2
+speechbrain==1.0.2  # Advanced speaker recognition
+resemblyzer==0.1.1.dev0  # Speaker embedding for better diarization
 
 # ---- Medical NER (Named Entity Recognition) - Portuguese ----
 transformers==4.46.3
 torch==2.5.1
+spacy==3.8.2  # Portuguese NLP
+sentencepiece==0.2.0  # Tokenization for medical terms
+tokenizers==0.20.3
+
+# ---- Portuguese Medical Libraries ----
+pymediterm==0.1.0  # Medical terminology (if available, else custom)
+medcat==1.12.1  # Medical concept extraction
 
 # ---- Paralinguistic Analysis (Emotion, Stress, Voice Quality) ----
 opensmile==2.5.0
+pyAudioAnalysis==0.3.14  # Additional audio features
 
 # ---- Prosody Analysis (Pitch, Rhythm, Intonation, Pauses) ----
 praat-parselmouth==0.4.5
@@ -30,32 +43,39 @@ praat-parselmouth==0.4.5
 # ---- Audio Processing & Pre-processing ----
 librosa==0.10.2
 soundfile==0.12.1
-scipy==1.12.0
+scipy==1.14.1
 numpy==1.26.4
+noisereduce==3.0.2  # Noise reduction for medical consultations
+webrtcvad==2.0.10  # Voice activity detection
+pydub==0.25.1
+resampy==0.4.3  # Audio resampling
+
+# ---- Real-Time Audio Streaming ----
+pyaudio==0.2.14  # Real-time audio capture
+aubio==0.4.9  # Real-time pitch detection
+
+# ---- Pattern Matching & Agent Triggering ----
+regex==2024.11.6  # Advanced regex for pattern matching
+fuzzywuzzy==0.18.0  # Fuzzy string matching for medical terms
+python-Levenshtein==0.26.1  # Fast string matching
+transitions==0.9.2  # State machine for conversation flow
 
 # ---- Utilities ----
 aiofiles==24.1.0
 tqdm==4.67.1
-numpy==1.24.3
-matplotlib==3.8.2  # For prosody visualization
+matplotlib==3.9.2  # For prosody visualization
+python-json-logger==3.1.0  # Structured logging
+redis==5.2.0  # Cache for real-time processing
 
 # ---- GPU Optimization & Deep Learning ----
-# NVIDIA CUDA support (if using GPU - requires CUDA toolkit installed)
-# These are compatible with CUDA 12.1 (used in Docker image)
-# torch==2.4.0  # Already listed above
+# NVIDIA CUDA support (compatible with CUDA 12.1)
+accelerate==1.1.1  # GPU optimization
+bitsandbytes==0.44.1  # Quantization for efficient inference
 
-# TensorRT support (optional - for inference optimization)
-# tensorrt==8.6.1  # Requires nvidia-tensorrt package (install separately)
-
-# ---- Optional: Advanced Features ----
-# PyDub for audio format conversion
-pydub==0.25.1
-
-# TQDM for progress bars
-tqdm==4.66.1
-
-# UUID & async support
-aiofiles==23.2.1
+# ---- Conversation Analysis & Ambient Listening ----
+nltk==3.9.1  # Natural language processing
+textblob==0.18.0.post0  # Sentiment analysis
+langdetect==1.0.9  # Language detection
 
 # ============================================================================
 # VERSION STRATEGY:

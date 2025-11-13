@@ -4,7 +4,7 @@ Audio Transcription, Diarization, Medical NER, Paralinguistics & Prosody Analysi
 October 2025 - Production Ready
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile
+from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, List, Any, Tuple
@@ -563,6 +563,90 @@ async def extended_health_check():
         "jobs_processed": len(processing_jobs),
         "timestamp": datetime.utcnow().isoformat()
     }
+
+# ============================================================================
+# REAL-TIME WEBSOCKET ENDPOINT
+# ============================================================================
+
+@app.websocket("/realtime")
+async def websocket_realtime_transcription(websocket: WebSocket):
+    """
+    Real-time audio transcription via WebSocket with ambient agent triggering.
+
+    Protocol:
+    - Client sends: Binary audio data (16-bit PCM, 16kHz mono)
+    - Server sends: JSON with transcription results and triggered agents
+
+    Features:
+    - Voice Activity Detection (VAD)
+    - Real-time transcription with Faster-Whisper
+    - Speaker diarization
+    - Ambient agent triggering (pattern matching)
+    - Medical context awareness
+
+    Example client (JavaScript):
+        const ws = new WebSocket('ws://localhost:8787/realtime');
+        ws.binaryType = 'arraybuffer';
+
+        // Send audio chunks
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            const audioContext = new AudioContext({ sampleRate: 16000 });
+            const source = audioContext.createMediaStreamSource(stream);
+            const processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+            processor.onaudioprocess = (e) => {
+                const audioData = e.inputBuffer.getChannelData(0);
+                const int16Data = new Int16Array(audioData.length);
+                for (let i = 0; i < audioData.length; i++) {
+                    int16Data[i] = audioData[i] * 32767;
+                }
+                ws.send(int16Data.buffer);
+            };
+
+            source.connect(processor);
+            processor.connect(audioContext.destination);
+        });
+
+        // Receive transcription and agent triggers
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.text) {
+                console.log('Transcription:', data.text);
+                console.log('Speaker:', data.speaker);
+                if (data.agents_triggered && data.agents_triggered.length > 0) {
+                    console.log('🤖 Agents triggered:', data.agents_triggered);
+                }
+            }
+        };
+    """
+    try:
+        # Import real-time transcription module
+        import sys
+        sys.path.insert(0, '/home/user/AACI')
+        from aaci.realtime_transcription import get_transcriber, RealtimeConfig
+
+        # Initialize transcriber with medical Portuguese configuration
+        config = RealtimeConfig(
+            whisper_model="large-v3-turbo",
+            compute_type="float16",
+            device=models._device,
+            language="pt",
+            enable_noise_reduction=True,
+            enable_diarization=True,
+            enable_ambient_agents=True,
+            buffer_duration_s=3,
+            overlap_duration_s=0.5
+        )
+
+        transcriber = get_transcriber(config)
+        await transcriber.process_websocket(websocket)
+
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}", exc_info=True)
+        try:
+            await websocket.close()
+        except:
+            pass
 
 if __name__ == "__main__":
     import uvicorn
