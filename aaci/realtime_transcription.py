@@ -138,7 +138,7 @@ class RealtimeTranscriber:
             try:
                 self.diarization_pipeline = DiarizationPipeline.from_pretrained(
                     "pyannote/speaker-diarization-3.1",
-                    use_auth_token=True  # Requires HF token
+                    "pyannote/speaker-diarization-3.1"
                 )
                 logger.info("Speaker diarization enabled")
             except Exception as e:
