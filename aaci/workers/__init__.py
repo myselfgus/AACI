@@ -1,6 +1,7 @@
 """
 AACI Worker for real-time transcription using Whisper Large 3.
 """
+import io
 import os
 import torch
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -238,5 +239,4 @@ def main():
 
 
 if __name__ == "__main__":
-    import io
     main()
