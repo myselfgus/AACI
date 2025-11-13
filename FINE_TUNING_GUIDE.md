@@ -539,7 +539,7 @@ def main():
         eval_dataset=dataset["validation"],
         data_collator=data_collator,
         compute_metrics=compute_metrics,
-        tokenizer=processor.feature_extractor,
+        tokenizer=processor,
         callbacks=[MedicalVocabCallback(get_all_medical_terms())]
     )
 
