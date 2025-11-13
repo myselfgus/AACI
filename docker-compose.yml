@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  aaci-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: aaci-worker:latest
+    container_name: aaci-worker
+    environment:
+      - MODEL_NAME=openai/whisper-large-v3
+      - LANGUAGE=pt
+      - TASK=transcribe
+      - DEVICE=cuda
+      - BATCH_SIZE=8
+      - NUM_WORKERS=4
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./checkpoints:/app/checkpoints
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - aaci-network
+
+  aaci-finetuner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: aaci-worker:latest
+    container_name: aaci-finetuner
+    environment:
+      - MODEL_NAME=openai/whisper-large-v3
+      - LANGUAGE=pt
+      - TASK=finetune
+      - DEVICE=cuda
+      - BATCH_SIZE=4
+      - LEARNING_RATE=1e-5
+      - NUM_EPOCHS=10
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./checkpoints:/app/checkpoints
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: "no"
+    networks:
+      - aaci-network
+
+networks:
+  aaci-network:
+    driver: bridge
