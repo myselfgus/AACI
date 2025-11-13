@@ -164,7 +164,7 @@ class AgentTrigger(BaseModel):
     matched_text: str = Field(..., description="Text that triggered the agent")
     matched_pattern: Optional[str] = Field(None, description="Pattern that matched")
     context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Trigger timestamp")
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="Trigger timestamp")
     recommended_action: Optional[str] = Field(None, description="Recommended action description")
 
 
